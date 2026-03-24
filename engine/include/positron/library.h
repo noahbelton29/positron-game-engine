@@ -7,6 +7,6 @@
 #ifndef POSITRON_LIBRARY_H
 #define POSITRON_LIBRARY_H
 
-void hello();
+void openWindow();
 
 #endif // POSITRON_LIBRARY_H

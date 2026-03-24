@@ -7,6 +7,6 @@
 #include <positron/library.h>
 
 int main() {
-    hello();
+    openWindow();
     return 0;
 }
