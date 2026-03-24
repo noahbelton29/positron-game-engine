@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2025 Noah Belton
+// Copyright (c) 2026 Noah Belton
 // SPDX-License-Identifier: MIT
 // Created by noahbelton29 on 24/03/2026.
 //
@@ -16,10 +16,6 @@ namespace Positron {
         std::string  title  = "Positron Engine"; // NOLINT
         unsigned int width  = 1280;
         unsigned int height = 720;
-
-        explicit WindowConfig(std::string title = "Positron Engine", const unsigned int width = 1280,
-                              const unsigned int height = 720) :
-            title(std::move(title)), width(width), height(height) {}
     };
 
     class Window {
