@@ -8,7 +8,7 @@
 
 #include <positron/core/game.h>
 
-class example_game : public Positron::Game {
+class ExampleGame : public Positron::Game {
 public:
     void onInit() override;
     void onUpdate() override;

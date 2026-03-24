@@ -8,8 +8,8 @@
 
 #include <iostream>
 
-void example_game::onInit() { std::cout << "Hello World!" << std::endl; }
+void ExampleGame::onInit() { std::cout << "Hello World!" << std::endl; }
 
-void example_game::onUpdate() {}
+void ExampleGame::onUpdate() {}
 
-void example_game::onShutdown() {}
+void ExampleGame::onShutdown() {}
