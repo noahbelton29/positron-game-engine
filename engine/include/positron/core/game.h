@@ -6,6 +6,8 @@
 
 #pragma once
 
+#include "positron/renderer/renderer.h"
+
 namespace Positron {
     class Game {
     public:
@@ -14,5 +16,7 @@ namespace Positron {
         virtual void onInit()     = 0;
         virtual void onUpdate()   = 0;
         virtual void onShutdown() = 0;
+
+        [[nodiscard]] virtual RenderAPI getRenderAPI() const { return RenderAPI::OpenGL; }
     };
 } // namespace Positron

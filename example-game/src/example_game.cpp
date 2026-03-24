@@ -13,3 +13,5 @@ void ExampleGame::onInit() { std::cout << "Hello World!" << std::endl; }
 void ExampleGame::onUpdate() {}
 
 void ExampleGame::onShutdown() {}
+
+Positron::RenderAPI ExampleGame::getRenderAPI() const { return Positron::RenderAPI::OpenGL; }

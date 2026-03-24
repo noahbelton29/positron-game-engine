@@ -11,10 +11,22 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(glfw)
 
+# glad
+add_library(glad STATIC
+        ${CMAKE_SOURCE_DIR}/external/glad/src/glad.c)
+
+target_include_directories(glad PUBLIC
+        ${CMAKE_SOURCE_DIR}/external/glad/include)
+
+set_target_properties(glad PROPERTIES POSITION_INDEPENDENT_CODE ON)
+
+# engine
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 file(GLOB_RECURSE HEADERS "include/*.h")
 
 add_library(PositronEngine SHARED ${SOURCES} ${HEADERS})
 
-target_include_directories(PositronEngine PUBLIC ${CMAKE_SOURCE_DIR}/engine/include)
-target_link_libraries(PositronEngine PUBLIC glfw)
+target_include_directories(PositronEngine PUBLIC
+        ${CMAKE_SOURCE_DIR}/engine/include)
+
+target_link_libraries(PositronEngine PUBLIC glfw glad)

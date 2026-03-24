@@ -8,6 +8,7 @@
 
 #include "positron/core/game.h"
 #include "positron/core/window.h"
+#include "positron/renderer/renderer.h"
 
 #include <memory>
 
@@ -27,7 +28,8 @@ namespace Positron {
         void run() const;
 
     private:
-        std::unique_ptr<Window> window_;
-        std::unique_ptr<Game>   game_;
+        std::unique_ptr<Window>   window_;
+        std::unique_ptr<Game>     game_;
+        std::unique_ptr<Renderer> renderer_;
     };
 } // namespace Positron

@@ -10,7 +10,8 @@
 
 namespace Positron {
     Application::Application(ApplicationConfig config, std::unique_ptr<Game> game) :
-        window_(std::make_unique<Window>(std::move(config.window))), game_(std::move(game)) {}
+        window_(std::make_unique<Window>(std::move(config.window))), game_(std::move(game)),
+        renderer_(Renderer::create(game_->getRenderAPI())) {}
 
     void Application::run() const {
         if (!window_->init()) {
@@ -18,13 +19,21 @@ namespace Positron {
             return;
         }
 
+        if (!renderer_->init()) {
+            std::cerr << "Failed to initialize renderer\n";
+            return;
+        }
+
         game_->onInit();
 
         while (!window_->shouldClose()) {
+            renderer_->begin();
             game_->onUpdate();
+            renderer_->end();
             window_->onUpdate();
         }
 
         game_->onShutdown();
+        renderer_->shutdown();
     }
 } // namespace Positron

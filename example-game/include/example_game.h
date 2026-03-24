@@ -13,4 +13,6 @@ public:
     void onInit() override;
     void onUpdate() override;
     void onShutdown() override;
+
+    [[nodiscard]] Positron::RenderAPI getRenderAPI() const override;
 };
