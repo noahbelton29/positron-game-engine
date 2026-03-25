@@ -9,7 +9,7 @@
 #include <positron/core/application.h>
 
 int main() {
-    const Positron::Application app({.window = Positron::WindowConfig("My Game", 1280, 720)},
-                                    std::make_unique<ExampleGame>());
+    Positron::Application app({.window = Positron::WindowConfig("My Game", 1280, 720)},
+                              std::make_unique<ExampleGame>());
     app.run();
 }

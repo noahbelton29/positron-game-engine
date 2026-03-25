@@ -6,11 +6,13 @@
 
 #pragma once
 
+#include "positron/core/export.h"
+
 #include <memory>
 #include <spdlog/spdlog.h>
 
 namespace Positron {
-    class Log {
+    class POSITRON_API Log {
     public:
         static void init();
 

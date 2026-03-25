@@ -6,10 +6,11 @@
 
 #pragma once
 
+#include "positron/core/export.h"
 #include "positron/renderer/renderer.h"
 
 namespace Positron {
-    class OpenGLRenderer : public Renderer {
+    class POSITRON_API OpenGLRenderer : public Renderer {
     public:
         bool init() override;
         void shutdown() override;

@@ -49,6 +49,7 @@ target_include_directories(PositronEngine PUBLIC
         ${backward_SOURCE_DIR})
 
 target_compile_definitions(PositronEngine PUBLIC BACKWARD_HAS_DW=1)
+target_compile_definitions(PositronEngine PRIVATE POSITRON_BUILD_DLL)
 
 target_link_libraries(PositronEngine PUBLIC glfw glad spdlog dw)
 

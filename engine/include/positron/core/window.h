@@ -6,19 +6,19 @@
 
 #pragma once
 
-#include <GLFW/glfw3.h>
+#include "positron/core/export.h"
 
+#include <GLFW/glfw3.h>
 #include <string>
-#include <utility>
 
 namespace Positron {
-    struct WindowConfig {
+    struct POSITRON_API WindowConfig {
         std::string  title  = "Positron Engine"; // NOLINT
         unsigned int width  = 1280;
         unsigned int height = 720;
     };
 
-    class Window {
+    class POSITRON_API Window {
     public:
         explicit Window(WindowConfig config = WindowConfig());
         ~Window();
@@ -30,6 +30,7 @@ namespace Positron {
         [[nodiscard]] unsigned int getWidth() const;
         [[nodiscard]] unsigned int getHeight() const;
         [[nodiscard]] bool         shouldClose() const;
+        [[nodiscard]] GLFWwindow  *getHandle() const { return window_; }
 
     private:
         GLFWwindow  *window_ = nullptr;

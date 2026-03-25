@@ -7,6 +7,7 @@
 #pragma once
 
 #include <string>
+#include "positron/core/export.h"
 
 namespace Positron {
     enum class RenderAPI {
@@ -14,7 +15,7 @@ namespace Positron {
         OpenGL = 1,
     };
 
-    class Renderer {
+    class POSITRON_API Renderer {
     public:
         virtual ~Renderer()     = default;
         virtual bool init()     = 0;

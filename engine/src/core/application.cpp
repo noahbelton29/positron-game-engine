@@ -8,6 +8,7 @@
 
 #include <iostream>
 
+#include "positron/core/input.h"
 #include "positron/core/log.h"
 
 namespace Positron {
@@ -17,11 +18,13 @@ namespace Positron {
         Log::init();
     }
 
-    void Application::run() const {
+    void Application::run() {
         if (!window_->init()) {
             std::cerr << "Failed to initialize window\n";
             return;
         }
+
+        Input::init(window_->getHandle());
 
         if (!renderer_->init()) {
             std::cerr << "Failed to initialize renderer\n";
@@ -30,11 +33,15 @@ namespace Positron {
 
         game_->onInit();
 
-        while (!window_->shouldClose()) {
+        while (running_ && !window_->shouldClose()) {
+            Input::update();
             renderer_->begin();
             game_->onUpdate();
             renderer_->end();
             window_->onUpdate();
+
+            if (game_->shouldQuit())
+                running_ = false;
         }
 
         game_->onShutdown();

@@ -1,9 +1,3 @@
-//
-// Copyright (c) 2026 Noah Belton
-// SPDX-License-Identifier: MIT
-// Created by noahbelton29 on 24/03/2026.
-//
-
 #pragma once
 
 #include "positron/renderer/renderer.h"
@@ -18,5 +12,13 @@ namespace Positron {
         virtual void onShutdown() = 0;
 
         [[nodiscard]] virtual RenderAPI getRenderAPI() const { return RenderAPI::OpenGL; }
+
+        [[nodiscard]] bool shouldQuit() const { return shouldQuit_; }
+
+    protected:
+        void quit() { shouldQuit_ = true; }
+
+    private:
+        bool shouldQuit_ = false;
     };
 } // namespace Positron
