@@ -48,9 +48,41 @@ target_include_directories(PositronEngine PUBLIC
         ${CMAKE_SOURCE_DIR}/engine/include
         ${backward_SOURCE_DIR})
 
-target_compile_options(PositronEngine PRIVATE
-        $<$<CONFIG:Debug>:-g -fno-omit-frame-pointer -fno-inline>)
-
 target_compile_definitions(PositronEngine PUBLIC BACKWARD_HAS_DW=1)
 
 target_link_libraries(PositronEngine PUBLIC glfw glad spdlog dw)
+
+# debug
+target_compile_options(PositronEngine PRIVATE
+        $<$<CONFIG:Debug>:
+        -g
+        -fno-omit-frame-pointer
+        -fno-inline
+        >)
+
+# release
+target_compile_options(PositronEngine PRIVATE
+        $<$<CONFIG:Release>:
+        -O3
+        -march=native
+        -ffast-math
+        -funroll-loops
+        -fomit-frame-pointer
+        -DNDEBUG
+        >)
+
+target_link_options(PositronEngine PRIVATE
+        $<$<CONFIG:Release>:
+        -O3
+        -flto
+        -s
+        >)
+
+# relwithdebinfo
+target_compile_options(PositronEngine PRIVATE
+        $<$<CONFIG:RelWithDebInfo>:
+        -O2
+        -g
+        -fno-omit-frame-pointer
+        -DNDEBUG
+        >)

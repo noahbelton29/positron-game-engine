@@ -8,11 +8,7 @@
 
 #include <positron/core/log.h>
 
-void ExampleGame::onInit() {
-    POSITRON_INFO("ExampleGame initialized");
-    int *ptr = nullptr;
-    *ptr     = 42;
-}
+void ExampleGame::onInit() { POSITRON_INFO("ExampleGame initialized"); }
 
 void ExampleGame::onUpdate() {}
 
