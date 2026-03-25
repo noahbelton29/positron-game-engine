@@ -5,6 +5,8 @@
 //
 
 #include "positron/core/window.h"
+#include "positron/core/event.h"
+#include "positron/core/event_bus.h"
 
 #include <iostream>
 #include <utility>
@@ -34,7 +36,56 @@ namespace Positron {
         }
 
         glfwMakeContextCurrent(window_);
+        registerCallbacks();
         return true;
+    }
+
+    void Window::registerCallbacks() {
+        glfwSetWindowUserPointer(window_, this);
+
+        glfwSetWindowCloseCallback(window_, [](GLFWwindow *) {
+            WindowCloseEvent e;
+            EventBus::emit(e);
+        });
+
+        glfwSetWindowSizeCallback(window_, [](GLFWwindow *, int w, int h) {
+            WindowResizeEvent e(static_cast<unsigned>(w), static_cast<unsigned>(h));
+            EventBus::emit(e);
+        });
+
+        glfwSetKeyCallback(window_, [](GLFWwindow *, int glfwKey, int /*scancode*/, int action, int /*mods*/) {
+            if (glfwKey < 0)
+                return;
+            const auto key = static_cast<Key>(glfwKey);
+            if (action == GLFW_PRESS) {
+                KeyPressedEvent e(key);
+                EventBus::emit(e);
+            } else if (action == GLFW_RELEASE) {
+                KeyReleasedEvent e(key);
+                EventBus::emit(e);
+            }
+        });
+
+        glfwSetMouseButtonCallback(window_, [](GLFWwindow *, int button, int action, int /*mods*/) {
+            const auto btn = static_cast<MouseButton>(button);
+            if (action == GLFW_PRESS) {
+                MouseButtonPressedEvent e(btn);
+                EventBus::emit(e);
+            } else if (action == GLFW_RELEASE) {
+                MouseButtonReleasedEvent e(btn);
+                EventBus::emit(e);
+            }
+        });
+
+        glfwSetCursorPosCallback(window_, [](GLFWwindow *, double x, double y) {
+            MouseMovedEvent e(x, y);
+            EventBus::emit(e);
+        });
+
+        glfwSetScrollCallback(window_, [](GLFWwindow *, double xOff, double yOff) {
+            MouseScrolledEvent e(xOff, yOff);
+            EventBus::emit(e);
+        });
     }
 
     void Window::onUpdate() const {

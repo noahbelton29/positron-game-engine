@@ -35,5 +35,8 @@ namespace Positron {
     private:
         GLFWwindow  *window_ = nullptr;
         WindowConfig config_;
+
+        // Register GLFW callbacks that emit into EventBus
+        void registerCallbacks();
     };
 } // namespace Positron

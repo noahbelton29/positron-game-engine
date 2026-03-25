@@ -1,5 +1,6 @@
 #pragma once
 
+#include "positron/core/event.h"
 #include "positron/renderer/renderer.h"
 
 namespace Positron {
@@ -12,6 +13,9 @@ namespace Positron {
         virtual void onInit()     = 0;
         virtual void onUpdate()   = 0;
         virtual void onShutdown() = 0;
+
+        // Optional: override to receive events via EventDispatcher
+        virtual void onEvent(Event & /*event*/) {}
 
         [[nodiscard]] virtual RenderAPI getRenderAPI() const { return RenderAPI::OpenGL; }
 

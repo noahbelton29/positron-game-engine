@@ -5,6 +5,7 @@
 //
 
 #include "positron/core/application.h"
+#include "positron/core/event_bus.h"
 
 #include <iostream>
 
@@ -34,6 +35,40 @@ namespace Positron {
         game_->window_   = window_.get();
         game_->renderer_ = renderer_.get();
 
+        // Forward all events to the game's onEvent handler
+        EventBus::subscribe<WindowCloseEvent>([this](WindowCloseEvent &e) {
+            game_->onEvent(e);
+            return e.handled;
+        });
+        EventBus::subscribe<WindowResizeEvent>([this](WindowResizeEvent &e) {
+            game_->onEvent(e);
+            return e.handled;
+        });
+        EventBus::subscribe<KeyPressedEvent>([this](KeyPressedEvent &e) {
+            game_->onEvent(e);
+            return e.handled;
+        });
+        EventBus::subscribe<KeyReleasedEvent>([this](KeyReleasedEvent &e) {
+            game_->onEvent(e);
+            return e.handled;
+        });
+        EventBus::subscribe<MouseButtonPressedEvent>([this](MouseButtonPressedEvent &e) {
+            game_->onEvent(e);
+            return e.handled;
+        });
+        EventBus::subscribe<MouseButtonReleasedEvent>([this](MouseButtonReleasedEvent &e) {
+            game_->onEvent(e);
+            return e.handled;
+        });
+        EventBus::subscribe<MouseMovedEvent>([this](MouseMovedEvent &e) {
+            game_->onEvent(e);
+            return e.handled;
+        });
+        EventBus::subscribe<MouseScrolledEvent>([this](MouseScrolledEvent &e) {
+            game_->onEvent(e);
+            return e.handled;
+        });
+
         game_->onInit();
 
         while (running_ && !window_->shouldClose()) {
@@ -49,5 +84,6 @@ namespace Positron {
 
         game_->onShutdown();
         renderer_->shutdown();
+        EventBus::clear();
     }
 } // namespace Positron
