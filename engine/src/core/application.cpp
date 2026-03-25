@@ -8,10 +8,14 @@
 
 #include <iostream>
 
+#include "positron/core/log.h"
+
 namespace Positron {
     Application::Application(ApplicationConfig config, std::unique_ptr<Game> game) :
         window_(std::make_unique<Window>(std::move(config.window))), game_(std::move(game)),
-        renderer_(Renderer::create(game_->getRenderAPI())) {}
+        renderer_(Renderer::create(game_->getRenderAPI())) {
+        Log::init();
+    }
 
     void Application::run() const {
         if (!window_->init()) {

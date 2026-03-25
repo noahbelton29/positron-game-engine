@@ -8,7 +8,13 @@
 
 #include <iostream>
 
-void ExampleGame::onInit() { std::cout << "Hello World!" << std::endl; }
+#include "positron/core/log.h"
+
+void ExampleGame::onInit() {
+    POSITRON_INFO("ExampleGame initialized");
+    int *ptr = nullptr;
+    *ptr     = 42;
+}
 
 void ExampleGame::onUpdate() {}
 
