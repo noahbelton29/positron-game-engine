@@ -3,6 +3,8 @@
 #include "positron/renderer/renderer.h"
 
 namespace Positron {
+    class Window;
+
     class Game {
     public:
         virtual ~Game() = default;
@@ -13,12 +15,18 @@ namespace Positron {
 
         [[nodiscard]] virtual RenderAPI getRenderAPI() const { return RenderAPI::OpenGL; }
 
-        [[nodiscard]] bool shouldQuit() const { return shouldQuit_; }
+        [[nodiscard]] bool      shouldQuit() const { return shouldQuit_; }
+        [[nodiscard]] Window   *getWindow() const { return window_; }
+        [[nodiscard]] Renderer *getRenderer() const { return renderer_; }
 
     protected:
         void quit() { shouldQuit_ = true; }
 
+        friend class Application;
+
     private:
-        bool shouldQuit_ = false;
+        bool      shouldQuit_ = false;
+        Window   *window_     = nullptr; // Non-owning pointer
+        Renderer *renderer_   = nullptr; // Non-owning pointer
     };
 } // namespace Positron

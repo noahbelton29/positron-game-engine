@@ -7,6 +7,9 @@
 #pragma once
 
 #include <positron/core/game.h>
+#include <positron/renderer/shader.h>
+
+#include <memory>
 
 class ExampleGame : public Positron::Game {
 public:
@@ -15,4 +18,7 @@ public:
     void onShutdown() override;
 
     [[nodiscard]] Positron::RenderAPI getRenderAPI() const override;
+
+private:
+    std::unique_ptr<Positron::Shader> myShader_;
 };

@@ -31,6 +31,9 @@ namespace Positron {
             return;
         }
 
+        game_->window_   = window_.get();
+        game_->renderer_ = renderer_.get();
+
         game_->onInit();
 
         while (running_ && !window_->shouldClose()) {

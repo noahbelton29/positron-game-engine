@@ -7,25 +7,29 @@
 #pragma once
 
 #include <string>
-#include "positron/core/export.h"
 
 namespace Positron {
-    enum class RenderAPI {
-        None   = 0,
-        OpenGL = 1,
-    };
+    enum class RenderAPI { None = 0, OpenGL = 1, Vulkan = 2 };
 
-    class POSITRON_API Renderer {
+    class Shader;
+
+    class Renderer {
     public:
-        virtual ~Renderer()     = default;
+        virtual ~Renderer() = default;
+
         virtual bool init()     = 0;
         virtual void shutdown() = 0;
+        virtual void begin()    = 0;
+        virtual void end()      = 0;
 
-        virtual void begin() = 0;
-        virtual void end()   = 0;
+        void setShader(Shader *shader) { customShader_ = shader; }
 
         [[nodiscard]] virtual RenderAPI   getAPI() const        = 0;
         [[nodiscard]] virtual std::string getDeviceName() const = 0;
-        [[nodiscard]] static Renderer    *create(RenderAPI api);
+
+        [[nodiscard]] static Renderer *create(RenderAPI api);
+
+    protected:
+        Shader *customShader_ = nullptr;
     };
 } // namespace Positron

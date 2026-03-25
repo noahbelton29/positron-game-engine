@@ -19,12 +19,12 @@ namespace Positron {
     bool Input::isKeyDown(Key key) { return currKeys_[static_cast<int>(key)]; }
 
     bool Input::isKeyPressed(Key key) {
-        int k = static_cast<int>(key);
+        const int k = static_cast<int>(key);
         return currKeys_[k] && !prevKeys_[k];
     }
 
     bool Input::isKeyReleased(Key key) {
-        int k = static_cast<int>(key);
+        const int k = static_cast<int>(key);
         return !currKeys_[k] && prevKeys_[k];
     }
 
