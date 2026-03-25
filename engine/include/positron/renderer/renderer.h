@@ -1,17 +1,20 @@
 //
 // Copyright (c) 2026 Noah Belton
 // SPDX-License-Identifier: MIT
-// Created by noahbelton29 on 24/03/2026.
+// Created by noahbelton29 on 25/03/2026.
 //
 
 #pragma once
 
+
+#include <glm/glm.hpp>
 #include <string>
+#include "positron/renderer/mesh.h"
 
 namespace Positron {
     enum class RenderAPI { None = 0, OpenGL = 1, Vulkan = 2 };
 
-    class Shader;
+    class GLShader;
 
     class Renderer {
     public:
@@ -22,7 +25,9 @@ namespace Positron {
         virtual void begin()    = 0;
         virtual void end()      = 0;
 
-        void setShader(Shader *shader) { customShader_ = shader; }
+        virtual void drawMesh(const Mesh *mesh, const glm::mat4 &transform) = 0;
+
+        void setShader(GLShader *shader) { customShader_ = shader; }
 
         [[nodiscard]] virtual RenderAPI   getAPI() const        = 0;
         [[nodiscard]] virtual std::string getDeviceName() const = 0;
@@ -30,6 +35,6 @@ namespace Positron {
         [[nodiscard]] static Renderer *create(RenderAPI api);
 
     protected:
-        Shader *customShader_ = nullptr;
+        GLShader *customShader_ = nullptr;
     };
 } // namespace Positron

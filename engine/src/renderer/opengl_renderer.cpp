@@ -8,87 +8,83 @@
 #include "positron/core/log.h"
 
 #include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
 namespace Positron {
-    // fallback, always works even if asset files are missing for the default shaders
-    static auto FALLBACK_VERT = R"(
+
+    static constexpr auto FALLBACK_VERT_SRC = R"(
         #version 460 core
         layout (location = 0) in vec3 aPos;
-        void main() { gl_Position = vec4(aPos, 1.0); }
+        layout (location = 1) in vec3 aColor;
+        layout (location = 2) in vec3 aNormal;
+        layout (location = 3) in vec2 aUV;
+        out vec3 vColor;
+        uniform mat4 uMVP;
+        void main() {
+            vColor = aColor;
+            gl_Position = uMVP * vec4(aPos, 1.0);
+        }
     )";
 
-    static auto FALLBACK_FRAG = R"(
+    static constexpr const char *FALLBACK_FRAG_SRC = R"(
         #version 460 core
+        in vec3 vColor;
         out vec4 fragColor;
-        void main() { fragColor = vec4(1.0, 0.5, 0.2, 1.0); }
+        void main() { fragColor = vec4(vColor, 1.0); }
     )";
-
-    static constexpr float triangleVertices[] = {
-            -0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.0f, 0.5f, 0.0f,
-    };
 
     bool OpenGLRenderer::init() {
-        if (!gladLoadGL()) {
-            std::cerr << "Failed to initialize GLAD\n";
+        if (!GLContext::init())
             return false;
-        }
 
         std::cout << "Positron Engine\n"
-                  << "  " << glGetString(GL_RENDERER) << " (" << glGetString(GL_VENDOR) << ")\n"
-                  << "  OpenGL " << glGetString(GL_VERSION) << " | GLSL " << glGetString(GL_SHADING_LANGUAGE_VERSION)
-                  << "\n";
+                  << "  " << GLContext::getRenderer() << " (" << GLContext::getVendor() << ")\n"
+                  << "  OpenGL " << GLContext::getVersion() << " | GLSL " << GLContext::getGLSLVersion() << "\n";
 
-        // try loading from file, fall back to default source
-        auto *loaded =
-                new Shader("engine/assets/shaders/opengl/default.vert", "engine/assets/shaders/opengl/default.frag");
+        defaultShader_ = GLShader::fromSource(FALLBACK_VERT_SRC, FALLBACK_FRAG_SRC);
 
-        if (loaded->getID() == 0) {
-            POSITRON_WARN("Default shader files not found, using default fallback");
-            delete loaded;
-            defaultShader_ = Shader::fromSource(FALLBACK_VERT, FALLBACK_FRAG);
-        } else {
-            defaultShader_ = loaded;
-        }
-
-        // VAO/VBO
-        glGenVertexArrays(1, &vao_);
-        glGenBuffers(1, &vbo_);
-
-        glBindVertexArray(vao_);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo_);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(triangleVertices), triangleVertices, GL_STATIC_DRAW);
-
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), nullptr);
-        glEnableVertexAttribArray(0);
-
-        glBindVertexArray(0);
-
+        glEnable(GL_DEPTH_TEST);
         return true;
     }
 
-    void OpenGLRenderer::shutdown() {
-        delete defaultShader_;
-        glDeleteVertexArrays(1, &vao_);
-        glDeleteBuffers(1, &vbo_);
-    }
+    void OpenGLRenderer::shutdown() { delete defaultShader_; }
 
     void OpenGLRenderer::begin() {
-        glClearColor(0.5f, 0.3f, 0.4f, 1.0f);
+        glClearColor(0.1f, 0.1f, 0.15f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        const Shader *active = customShader_ ? customShader_ : defaultShader_;
-
-        active->bind();
-        glBindVertexArray(vao_);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        glBindVertexArray(0);
-        active->unbind();
     }
 
     void OpenGLRenderer::end() {}
 
-    std::string OpenGLRenderer::getDeviceName() const {
-        return reinterpret_cast<const char *>(glGetString(GL_RENDERER));
+    void OpenGLRenderer::drawMesh(const Mesh *mesh, const glm::mat4 &transform) {
+        if (!mesh)
+            return;
+
+        GLShader *active = customShader_ ? customShader_ : defaultShader_;
+
+        GLint viewport[4];
+        glGetIntegerv(GL_VIEWPORT, viewport);
+        const float aspect = viewport[2] > 0 && viewport[3] > 0
+                                     ? static_cast<float>(viewport[2]) / static_cast<float>(viewport[3])
+                                     : 1.0f;
+
+        const glm::mat4     proj = glm::perspective(glm::radians(45.0f), aspect, 0.1f, 100.0f);
+        constexpr glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -3.0f));
+        const glm::mat4     mvp  = proj * view * transform;
+
+        active->bind();
+        active->setMat4("uMVP", glm::value_ptr(mvp));
+
+        mesh->bind();
+        glDrawElements(GL_TRIANGLES, mesh->getIndexCount(), GL_UNSIGNED_INT, nullptr);
+        mesh->unbind();
+
+        active->unbind();
     }
+
+    std::string OpenGLRenderer::getDeviceName() const { return GLContext::getRenderer(); }
+
 } // namespace Positron

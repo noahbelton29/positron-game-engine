@@ -26,7 +26,12 @@ FetchContent_Declare(
         GIT_TAG v1.6
 )
 
-FetchContent_MakeAvailable(glfw spdlog)
+FetchContent_Declare(
+        glm
+        GIT_REPOSITORY https://github.com/g-truc/glm.git
+        GIT_TAG 1.0.3
+)
+FetchContent_MakeAvailable(glfw spdlog glm)
 FetchContent_Populate(backward)
 
 # glad
@@ -51,7 +56,7 @@ target_include_directories(PositronEngine PUBLIC
 target_compile_definitions(PositronEngine PUBLIC BACKWARD_HAS_DW=1)
 target_compile_definitions(PositronEngine PRIVATE POSITRON_BUILD_DLL)
 
-target_link_libraries(PositronEngine PUBLIC glfw glad spdlog dw)
+target_link_libraries(PositronEngine PUBLIC glfw glad spdlog glm dw)
 
 # debug
 target_compile_options(PositronEngine PRIVATE

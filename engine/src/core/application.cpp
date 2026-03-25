@@ -35,7 +35,6 @@ namespace Positron {
         game_->window_   = window_.get();
         game_->renderer_ = renderer_.get();
 
-        // Forward all events to the game's onEvent handler
         EventBus::subscribe<WindowCloseEvent>([this](WindowCloseEvent &e) {
             game_->onEvent(e);
             return e.handled;

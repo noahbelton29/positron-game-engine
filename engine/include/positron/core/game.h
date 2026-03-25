@@ -1,3 +1,9 @@
+//
+// Copyright (c) 2026 Noah Belton
+// SPDX-License-Identifier: MIT
+// Created by noahbelton29 on 25/03/2026.
+//
+
 #pragma once
 
 #include "positron/core/event.h"
@@ -14,7 +20,6 @@ namespace Positron {
         virtual void onUpdate()   = 0;
         virtual void onShutdown() = 0;
 
-        // Optional: override to receive events via EventDispatcher
         virtual void onEvent(Event & /*event*/) {}
 
         [[nodiscard]] virtual RenderAPI getRenderAPI() const { return RenderAPI::OpenGL; }
@@ -30,7 +35,7 @@ namespace Positron {
 
     private:
         bool      shouldQuit_ = false;
-        Window   *window_     = nullptr; // Non-owning pointer
-        Renderer *renderer_   = nullptr; // Non-owning pointer
+        Window   *window_     = nullptr;
+        Renderer *renderer_   = nullptr;
     };
 } // namespace Positron

@@ -12,12 +12,15 @@
 #include <unordered_map>
 
 namespace Positron {
-    class POSITRON_API Shader {
+    class POSITRON_API GLShader {
     public:
-        Shader(const std::string &vertexPath, const std::string &fragmentPath);
-        ~Shader();
+        GLShader(const std::string &vertexPath, const std::string &fragmentPath);
+        ~GLShader();
 
-        [[nodiscard]] static Shader *fromSource(const std::string &vertSrc, const std::string &fragSrc);
+        GLShader(const GLShader &)            = delete;
+        GLShader &operator=(const GLShader &) = delete;
+
+        [[nodiscard]] static GLShader *fromSource(const std::string &vertSrc, const std::string &fragSrc);
 
         void bind() const;
         void unbind() const;
@@ -32,7 +35,7 @@ namespace Positron {
         [[nodiscard]] unsigned int getID() const { return id_; }
 
     private:
-        Shader() = default;
+        GLShader() = default;
 
         unsigned int id_ = 0;
 
@@ -41,7 +44,7 @@ namespace Positron {
         [[nodiscard]] static std::string  loadFile(const std::string &path);
         [[nodiscard]] static unsigned int compileStage(unsigned int type, const std::string &source);
 
-        std::unordered_map<std::string, int> uniformCache_;
         int                                  getUniformLocation(const std::string &name);
+        std::unordered_map<std::string, int> uniformCache_;
     };
 } // namespace Positron
