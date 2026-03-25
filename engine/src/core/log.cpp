@@ -4,7 +4,8 @@
 // Created by noahbelton29 on 25/03/2026.
 //
 
-#include <positron/core/log.h>
+#include "positron/core/log.h"
+
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/stdout_color_sinks.h>
 

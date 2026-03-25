@@ -4,7 +4,7 @@
 // Created by noahbelton29 on 24/03/2026.
 //
 
-#include <positron/renderer/opengl_renderer.h>
+#include "positron/renderer/opengl_renderer.h"
 
 #include <glad/glad.h>
 #include <iostream>

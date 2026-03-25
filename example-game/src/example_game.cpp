@@ -6,9 +6,7 @@
 
 #include "example_game.h"
 
-#include <iostream>
-
-#include "positron/core/log.h"
+#include <positron/core/log.h>
 
 void ExampleGame::onInit() {
     POSITRON_INFO("ExampleGame initialized");
