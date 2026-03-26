@@ -43,4 +43,22 @@ namespace Positron {
     struct POSITRON_API TagComponent {
         std::string name;
     };
+
+    enum class LightType { Directional = 0, Point = 1, Spot = 2 };
+
+    struct POSITRON_API LightComponent {
+        LightType type      = LightType::Point;
+        glm::vec3 color     = {1.f, 1.f, 1.f};
+        float     intensity = 1.f;
+
+        float range        = 10.f;
+        float attenLinear  = 0.09f;
+        float attenQuad    = 0.032f;
+
+        glm::vec3 direction  = {0.f, -1.f, 0.f};
+        float     innerAngle = 12.5f;
+        float     outerAngle = 17.5f;
+
+        bool castShadows = false;
+    };
 } // namespace Positron

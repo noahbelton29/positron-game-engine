@@ -31,6 +31,7 @@ namespace Positron {
         void setVec3(const std::string &name, float x, float y, float z);
         void setVec4(const std::string &name, float x, float y, float z, float w);
         void setMat4(const std::string &name, const float *matrix);
+        void setMat3(const std::string &name, const float *matrix);
 
         [[nodiscard]] unsigned int getID() const { return id_; }
 

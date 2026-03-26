@@ -6,13 +6,15 @@
 
 #pragma once
 
-
 #include <glm/glm.hpp>
 #include <string>
+#include <vector>
+#include <utility>
 #include "positron/ecs/component/components.h"
 #include "positron/renderer/mesh.h"
 
 #include "positron/ecs/scene/camera_data.h"
+#include "positron/ecs/scene/light_data.h"
 
 namespace Positron {
     enum class RenderAPI { None = 0, OpenGL = 1, Vulkan = 2 };
@@ -28,9 +30,13 @@ namespace Positron {
         virtual void begin()    = 0;
         virtual void end()      = 0;
 
+        virtual void shadowPass(const LightData& lights,
+                                const std::vector<std::pair<glm::mat4, const Mesh*>>& drawList) = 0;
+
         virtual void drawMesh(const Mesh* mesh, const glm::mat4& transform,
                               const MaterialComponent& material,
-                              const CameraData& camera) = 0;
+                              const CameraData& camera,
+                              const LightData& lights) = 0;
 
         void setShader(GLShader* shader) { customShader_ = shader; }
 

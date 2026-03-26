@@ -32,6 +32,13 @@ void ExampleGame::onInit() {
     scene.world().addComponent<Positron::TransformComponent>(cam, Positron::TransformComponent{{0.f, 0.f, 3.f}});
     scene.world().addComponent<CameraComponent>(cam);
 
+    const auto sun = scene.spawnEmpty("Sun");
+    scene.world().addComponent<Positron::TransformComponent>(sun, {{0.f, 5.f, 3.f}, {-45.f, 0.f, 0.f}});
+    scene.world().addComponent<Positron::LightComponent>(sun, {.type        = Positron::LightType::Directional,
+                                                               .color       = {1.f, 1.0f, 1.0f},
+                                                               .intensity   = 1.2f,
+                                                               .castShadows = true});
+
     scene.spawn<SpinningCubePrefab>(Positron::SpawnParams{}.at({-1.5f, 0.f, 0.f}));
     scene.spawn<BouncingCubePrefab>(Positron::SpawnParams{}.at({1.5f, 0.f, 0.f}));
     scene.spawn<FloorPrefab>(Positron::SpawnParams{}.at({0.f, -1.f, 0.f}));

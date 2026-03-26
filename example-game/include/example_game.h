@@ -6,7 +6,6 @@
 
 #pragma once
 
-#include <positron/ecs/core/ecs.h>
 #include <positron/core/event.h>
 #include <positron/core/event_bus.h>
 #include <positron/core/game.h>

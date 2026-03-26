@@ -83,12 +83,18 @@ namespace Positron {
         glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, matrix);
     }
 
+    void GLShader::setMat3(const std::string &name, const float *matrix) {
+        glUniformMatrix3fv(getUniformLocation(name), 1, GL_FALSE, matrix);
+    }
+
     int GLShader::getUniformLocation(const std::string &name) {
         if (uniformCache_.contains(name))
             return uniformCache_[name];
         const int location = glGetUniformLocation(id_, name.c_str());
+#ifndef NDEBUG
         if (location == -1)
             POSITRON_WARN("Uniform '{}' not found in shader", name);
+#endif
         uniformCache_[name] = location;
         return location;
     }
