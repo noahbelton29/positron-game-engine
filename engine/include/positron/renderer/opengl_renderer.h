@@ -18,7 +18,9 @@ namespace Positron {
         void begin() override;
         void end() override;
 
-        void drawMesh(const Mesh *mesh, const glm::mat4 &transform) override;
+        void drawMesh(const Mesh* mesh, const glm::mat4& transform,
+                      const MaterialComponent& material,
+                      const CameraData& camera) override;
 
         [[nodiscard]] RenderAPI   getAPI() const override { return RenderAPI::OpenGL; }
         [[nodiscard]] std::string getDeviceName() const override;

@@ -9,7 +9,10 @@
 
 #include <glm/glm.hpp>
 #include <string>
+#include "positron/ecs/component/components.h"
 #include "positron/renderer/mesh.h"
+
+#include "positron/ecs/scene/camera_data.h"
 
 namespace Positron {
     enum class RenderAPI { None = 0, OpenGL = 1, Vulkan = 2 };
@@ -25,16 +28,18 @@ namespace Positron {
         virtual void begin()    = 0;
         virtual void end()      = 0;
 
-        virtual void drawMesh(const Mesh *mesh, const glm::mat4 &transform) = 0;
+        virtual void drawMesh(const Mesh* mesh, const glm::mat4& transform,
+                              const MaterialComponent& material,
+                              const CameraData& camera) = 0;
 
-        void setShader(GLShader *shader) { customShader_ = shader; }
+        void setShader(GLShader* shader) { customShader_ = shader; }
 
         [[nodiscard]] virtual RenderAPI   getAPI() const        = 0;
         [[nodiscard]] virtual std::string getDeviceName() const = 0;
 
-        [[nodiscard]] static Renderer *create(RenderAPI api);
+        [[nodiscard]] static Renderer* create(RenderAPI api);
 
     protected:
-        GLShader *customShader_ = nullptr;
+        GLShader* customShader_ = nullptr;
     };
-} // namespace Positron
+}

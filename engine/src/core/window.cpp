@@ -105,4 +105,9 @@ namespace Positron {
     unsigned int Window::getHeight() const { return config_.height; }
     bool         Window::shouldClose() const { return glfwWindowShouldClose(window_); }
 
+    void Window::setMouseGrabbed(bool grabbed) const {
+        glfwSetInputMode(window_, GLFW_CURSOR,
+                         grabbed ? GLFW_CURSOR_DISABLED : GLFW_CURSOR_NORMAL);
+    }
+
 } // namespace Positron

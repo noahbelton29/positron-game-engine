@@ -31,10 +31,14 @@ FetchContent_Declare(
         GIT_REPOSITORY https://github.com/g-truc/glm.git
         GIT_TAG 1.0.3
 )
-FetchContent_MakeAvailable(glfw spdlog glm)
+FetchContent_Declare(
+        stb
+        GIT_REPOSITORY https://github.com/nothings/stb.git
+        GIT_TAG master
+)
+FetchContent_MakeAvailable(glfw spdlog glm stb)
 FetchContent_Populate(backward)
 
-# glad
 add_library(glad STATIC
         ${CMAKE_SOURCE_DIR}/external/glad/src/glad.c)
 
@@ -43,7 +47,6 @@ target_include_directories(glad PUBLIC
 
 set_target_properties(glad PROPERTIES POSITION_INDEPENDENT_CODE ON)
 
-# engine
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 file(GLOB_RECURSE HEADERS "include/*.h")
 
@@ -51,14 +54,16 @@ add_library(PositronEngine SHARED ${SOURCES} ${HEADERS})
 
 target_include_directories(PositronEngine PUBLIC
         ${CMAKE_SOURCE_DIR}/engine/include
-        ${backward_SOURCE_DIR})
+        ${backward_SOURCE_DIR}
+        ${stb_SOURCE_DIR})
 
 target_compile_definitions(PositronEngine PUBLIC BACKWARD_HAS_DW=1)
 target_compile_definitions(PositronEngine PRIVATE POSITRON_BUILD_DLL)
 
-target_link_libraries(PositronEngine PUBLIC glfw glad spdlog glm dw)
+target_link_libraries(PositronEngine PUBLIC glfw spdlog glm dw)
+find_package(OpenGL REQUIRED)
+target_link_libraries(PositronEngine PRIVATE glad OpenGL::GL)
 
-# debug
 target_compile_options(PositronEngine PRIVATE
         $<$<CONFIG:Debug>:
         -g
@@ -66,7 +71,6 @@ target_compile_options(PositronEngine PRIVATE
         -fno-inline
         >)
 
-# release
 target_compile_options(PositronEngine PRIVATE
         $<$<CONFIG:Release>:
         -O3
@@ -84,7 +88,6 @@ target_link_options(PositronEngine PRIVATE
         -s
         >)
 
-# relwithdebinfo
 target_compile_options(PositronEngine PRIVATE
         $<$<CONFIG:RelWithDebInfo>:
         -O2

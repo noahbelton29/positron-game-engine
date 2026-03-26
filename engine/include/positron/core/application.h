@@ -1,11 +1,6 @@
-//
-// Copyright (c) 2026 Noah Belton
-// SPDX-License-Identifier: MIT
-// Created by noahbelton29 on 24/03/2026.
-//
-
 #pragma once
 
+#include "../ecs/scene/scene.h"
 #include "positron/core/export.h"
 #include "positron/core/game.h"
 #include "positron/core/window.h"
@@ -33,6 +28,8 @@ namespace Positron {
         std::unique_ptr<Window>   window_;
         std::unique_ptr<Game>     game_;
         std::unique_ptr<Renderer> renderer_;
+        std::unique_ptr<Scene>    scene_;
         bool                      running_ = true;
     };
+
 } // namespace Positron

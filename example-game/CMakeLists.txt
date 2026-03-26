@@ -9,6 +9,9 @@ file(GLOB_RECURSE HEADERS "include/*.h")
 add_executable(Game ${SOURCES} ${HEADERS})
 
 target_link_libraries(Game PRIVATE PositronEngine)
+find_package(OpenGL REQUIRED)
+target_link_libraries(Game PRIVATE glad OpenGL::GL)
+
 target_include_directories(Game PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # debug

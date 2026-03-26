@@ -32,11 +32,12 @@ namespace Positron {
         [[nodiscard]] bool         shouldClose() const;
         [[nodiscard]] GLFWwindow  *getHandle() const { return window_; }
 
+        void setMouseGrabbed(bool grabbed) const;
+
     private:
         GLFWwindow  *window_ = nullptr;
         WindowConfig config_;
 
-        // Register GLFW callbacks that emit into EventBus
         void registerCallbacks();
     };
 } // namespace Positron

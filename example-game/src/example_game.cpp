@@ -1,52 +1,72 @@
 //
 // Copyright (c) 2026 Noah Belton
 // SPDX-License-Identifier: MIT
-// Created by noahbelton29 on 24/03/2026.
+// Created by noahbelton29 on 26/03/2026.
 //
 
 #include "example_game.h"
 
 #include <positron/core/input.h>
 #include <positron/core/log.h>
-#include <positron/renderer/mesh_factory.h>
 
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
+#include "components/camera_component.h"
+
+#include "prefabs/bouncing_cube_prefab.h"
+#include "prefabs/floor_prefab.h"
+#include "prefabs/spinning_cube_prefab.h"
+
+#include "systems/bounce_system.h"
+#include "systems/camera_system.h"
+#include "systems/spin_system.h"
 
 void ExampleGame::onInit() {
-    POSITRON_INFO("ExampleGame initialized");
+    POSITRON_INFO("ExampleGame initialised");
 
-    cubeMesh_ = Positron::MeshFactory::cube(getRenderAPI());
+    Positron::Scene &scene = getScene();
 
-    events_.subscribe<Positron::KeyPressedEvent>([this](const Positron::KeyPressedEvent &e) {
-        if (e.getKey() == Positron::Key::Escape) {
+    scene.addSystem<CameraSystem>();
+    scene.addSystem<SpinSystem>();
+    scene.addSystem<BounceSystem>();
+
+    const auto cam = scene.spawnEmpty("Camera");
+    scene.world().addComponent<Positron::TransformComponent>(cam, Positron::TransformComponent{{0.f, 0.f, 3.f}});
+    scene.world().addComponent<CameraComponent>(cam);
+
+    scene.spawn<SpinningCubePrefab>(Positron::SpawnParams{}.at({-1.5f, 0.f, 0.f}));
+    scene.spawn<BouncingCubePrefab>(Positron::SpawnParams{}.at({1.5f, 0.f, 0.f}));
+    scene.spawn<FloorPrefab>(Positron::SpawnParams{}.at({0.f, -1.f, 0.f}));
+
+    events_.subscribe<Positron::KeyPressedEvent>([this, &scene](const Positron::KeyPressedEvent &keyEvent) {
+        if (keyEvent.getKey() == Positron::Key::Escape) {
             quit();
             return true;
         }
+        if (keyEvent.getKey() == Positron::Key::Space) {
+            static float spawnOffsetX = 0.f;
+            spawnOffsetX += 0.5f;
+            scene.spawn<SpinningCubePrefab>(Positron::SpawnParams{}.at({spawnOffsetX, 0.f, -3.f}), 2.f, 0.5f);
+            POSITRON_INFO("Spawned spinning cube at x={}", spawnOffsetX);
+
+            EnemyDiedEvent enemyEvent(42);
+            Positron::EventBus::emit(enemyEvent);
+        }
+        return false;
+    });
+
+    events_.subscribe<EnemyDiedEvent>([](const EnemyDiedEvent &enemyEvent) {
+        POSITRON_INFO("Enemy {} died!", enemyEvent.enemyId);
         return false;
     });
 }
 
-void ExampleGame::onUpdate() {
-    rotation_ += 0.005f;
+void ExampleGame::onUpdate() {}
 
-    const glm::mat4 transform = glm::rotate(glm::mat4(1.0f), rotation_, glm::vec3(0.0f, 1.0f, 0.0f)) *
-                                glm::rotate(glm::mat4(1.0f), rotation_ * 0.5f, glm::vec3(1.0f, 0.0f, 0.0f));
+void ExampleGame::onShutdown() { POSITRON_INFO("ExampleGame shutdown"); }
 
-    if (auto *renderer = getRenderer())
-        renderer->drawMesh(cubeMesh_.get(), transform);
-}
-
-void ExampleGame::onShutdown() {
-    POSITRON_INFO("Game shut down");
-    cubeMesh_.reset();
-}
-
-void ExampleGame::onEvent(Positron::Event &e) {
-    Positron::EventDispatcher d(e);
-
-    d.dispatch<Positron::WindowResizeEvent>([](const Positron::WindowResizeEvent &ev) {
-        POSITRON_INFO("Window resized: {}x{}", ev.getWidth(), ev.getHeight());
+void ExampleGame::onEvent(Positron::Event &event) {
+    Positron::EventDispatcher dispatcher(event);
+    dispatcher.dispatch<Positron::WindowResizeEvent>([](const Positron::WindowResizeEvent &resizeEvent) {
+        POSITRON_INFO("Resized: {}x{}", resizeEvent.getWidth(), resizeEvent.getHeight());
         return false;
     });
 }
