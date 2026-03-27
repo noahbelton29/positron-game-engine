@@ -67,6 +67,20 @@ namespace Positron {
         Down  = GLFW_KEY_DOWN,
         Left  = GLFW_KEY_LEFT,
         Right = GLFW_KEY_RIGHT,
+
+        // Function keys
+        F1  = GLFW_KEY_F1,
+        F2  = GLFW_KEY_F2,
+        F3  = GLFW_KEY_F3,
+        F4  = GLFW_KEY_F4,
+        F5  = GLFW_KEY_F5,
+        F6  = GLFW_KEY_F6,
+        F7  = GLFW_KEY_F7,
+        F8  = GLFW_KEY_F8,
+        F9  = GLFW_KEY_F9,
+        F10 = GLFW_KEY_F10,
+        F11 = GLFW_KEY_F11,
+        F12 = GLFW_KEY_F12,
     };
 
     enum class MouseButton {

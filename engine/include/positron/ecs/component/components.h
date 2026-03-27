@@ -7,6 +7,7 @@
 #pragma once
 
 #include "positron/core/export.h"
+#include "positron/ecs/scene/mesh_type.h"
 #include "positron/renderer/mesh.h"
 #include "positron/renderer/texture.h"
 
@@ -42,6 +43,15 @@ namespace Positron {
 
     struct POSITRON_API TagComponent {
         std::string name;
+    };
+
+    struct POSITRON_API MeshDescComponent {
+        MeshType type   = MeshType::Cube;
+        float    size   = 1.f;
+        float    planeW = 1.f;
+        float    planeH = 1.f;
+        int      subX   = 1;
+        int      subZ   = 1;
     };
 
     enum class LightType { Directional = 0, Point = 1, Spot = 2 };

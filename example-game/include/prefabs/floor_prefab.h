@@ -10,7 +10,7 @@
 
 class FloorPrefab : public Positron::Prefab {
 public:
-    explicit FloorPrefab(float width = 6.f, float height = 6.f);
+    explicit FloorPrefab(float width = 16.f, float height = 16.f);
 
     [[nodiscard]] std::string        name() const override;
     [[nodiscard]] Positron::MeshDesc mesh() const override;

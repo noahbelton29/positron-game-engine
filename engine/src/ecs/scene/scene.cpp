@@ -26,10 +26,7 @@ namespace Positron {
         }
     } // namespace
 
-    Scene::Scene(Renderer *renderer) : renderer_(renderer) {
-        world_.setResource<Renderer *>(renderer_);
-        world_.addSystem<RenderSystem>();
-    }
+    Scene::Scene(Renderer *renderer) : renderer_(renderer) { world_.setResource<Renderer *>(renderer_); }
 
     Entity Scene::spawnPrefab(Prefab &prefab, const SpawnParams &params) {
         const Entity entity = world_.createEntity();
@@ -37,9 +34,12 @@ namespace Positron {
         world_.addComponent<TransformComponent>(entity,
                                                 TransformComponent{params.position, params.rotation, params.scale});
 
-        if (auto mesh = buildMesh(renderer_->getAPI(), prefab.mesh())) {
+        const MeshDesc &desc = prefab.mesh();
+        if (auto mesh = buildMesh(renderer_->getAPI(), desc)) {
             Mesh *raw = storeMesh(std::move(mesh));
             world_.addComponent<MeshRendererComponent>(entity, MeshRendererComponent{raw, {}, true});
+            world_.addComponent<MeshDescComponent>(
+                    entity, MeshDescComponent{desc.type, desc.size, desc.planeW, desc.planeH, desc.subX, desc.subZ});
         }
 
         EntityBuilder builder(world_, entity);
@@ -63,6 +63,8 @@ namespace Positron {
         if (auto mesh = buildMesh(renderer_->getAPI(), desc)) {
             Mesh *raw = storeMesh(std::move(mesh));
             world_.addComponent<MeshRendererComponent>(entity, MeshRendererComponent{raw, {}, true});
+            world_.addComponent<MeshDescComponent>(
+                    entity, MeshDescComponent{desc.type, desc.size, desc.planeW, desc.planeH, desc.subX, desc.subZ});
         }
 
         return entity;
@@ -85,11 +87,42 @@ namespace Positron {
         return found;
     }
 
+    void Scene::attachMesh(const Entity entity, const MeshDesc &desc) {
+        if (auto mesh = buildMesh(renderer_->getAPI(), desc)) {
+            Mesh *raw = storeMesh(std::move(mesh));
+            if (world_.hasComponent<MeshRendererComponent>(entity))
+                world_.getComponent<MeshRendererComponent>(entity).mesh = raw;
+            else
+                world_.addComponent<MeshRendererComponent>(entity, MeshRendererComponent{raw, {}, true});
+            const MeshDescComponent mdc{desc.type, desc.size, desc.planeW, desc.planeH, desc.subX, desc.subZ};
+            if (world_.hasComponent<MeshDescComponent>(entity))
+                world_.getComponent<MeshDescComponent>(entity) = mdc;
+            else
+                world_.addComponent<MeshDescComponent>(entity, mdc);
+        }
+    }
+
+    void Scene::applyTexture(const Entity entity) {
+        if (!world_.hasComponent<TextureComponent>(entity) || !world_.hasComponent<MeshRendererComponent>(entity))
+            return;
+        auto &[path, filter] = world_.getComponent<TextureComponent>(entity);
+        auto *tex            = storeTexture(Texture::load(path, filter));
+        world_.getComponent<MeshRendererComponent>(entity).material.albedo = tex;
+    }
+
+
     World       &Scene::world() { return world_; }
     const World &Scene::world() const { return world_; }
 
-    void Scene::update() { world_.update(); }
-    void Scene::shutdown() { world_.shutdown(); }
+    void Scene::update() {
+        world_.update();
+        renderSystem_.onUpdate(world_);
+    }
+
+    void Scene::shutdown() {
+        world_.shutdown();
+        renderSystem_.onShutdown(world_);
+    }
 
     Mesh *Scene::storeMesh(std::unique_ptr<Mesh> mesh) {
         Mesh *raw = mesh.get();

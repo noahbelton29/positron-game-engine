@@ -10,6 +10,7 @@
 #include "positron/ecs/component/components.h"
 #include "positron/ecs/core/entity.h"
 #include "positron/ecs/core/world.h"
+#include "positron/ecs/systems/render_system.h"
 #include "positron/renderer/mesh.h"
 #include "positron/renderer/renderer.h"
 #include "prefab.h"
@@ -36,6 +37,9 @@ namespace Positron {
         }
 
         Entity spawnFromDesc(const std::string &name, const MeshDesc &desc, const SpawnParams &params = {});
+
+        void attachMesh(Entity entity, const MeshDesc &desc);
+        void applyTexture(Entity entity);
 
         Entity spawnEmpty(const std::string &name = "Entity");
 
@@ -66,6 +70,7 @@ namespace Positron {
 
         Renderer                             *renderer_;
         World                                 world_;
+        RenderSystem                          renderSystem_;
         std::vector<std::unique_ptr<Mesh>>    meshes_;
         std::vector<std::unique_ptr<Texture>> textures_;
     };
