@@ -36,7 +36,26 @@ FetchContent_Declare(
         GIT_REPOSITORY https://github.com/nothings/stb.git
         GIT_TAG master
 )
-FetchContent_MakeAvailable(glfw spdlog glm stb)
+FetchContent_Declare(
+        pfr
+        GIT_REPOSITORY https://github.com/boostorg/pfr.git
+        GIT_TAG 2.2.0
+)
+
+set(JPH_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
+set(JPH_ENABLE_ASSERTS OFF CACHE BOOL "" FORCE)
+set(JPH_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(JPH_ENABLE_INSTALL OFF CACHE BOOL "" FORCE)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+FetchContent_Declare(
+        JoltPhysics
+        GIT_REPOSITORY https://github.com/jrouwe/JoltPhysics.git
+        GIT_TAG v5.3.0
+        SOURCE_SUBDIR Build
+)
+FetchContent_MakeAvailable(glfw spdlog glm stb pfr JoltPhysics)
 FetchContent_Populate(backward)
 
 add_library(glad STATIC
@@ -55,12 +74,15 @@ add_library(PositronEngine SHARED ${SOURCES} ${HEADERS})
 target_include_directories(PositronEngine PUBLIC
         ${CMAKE_SOURCE_DIR}/engine/include
         ${backward_SOURCE_DIR}
-        ${stb_SOURCE_DIR})
+        ${stb_SOURCE_DIR}
+        ${pfr_SOURCE_DIR}/include
+        ${joltphysics_SOURCE_DIR})
 
 target_compile_definitions(PositronEngine PUBLIC BACKWARD_HAS_DW=1)
 target_compile_definitions(PositronEngine PRIVATE POSITRON_BUILD_DLL)
+target_compile_options(PositronEngine PRIVATE -fno-modules-ts)
 
-target_link_libraries(PositronEngine PUBLIC glfw spdlog glm dw)
+target_link_libraries(PositronEngine PUBLIC glfw spdlog glm dw Jolt)
 find_package(OpenGL REQUIRED)
 target_link_libraries(PositronEngine PRIVATE glad OpenGL::GL)
 
@@ -77,7 +99,6 @@ target_compile_options(PositronEngine PRIVATE
         -march=native
         -ffast-math
         -funroll-loops
-        -fomit-frame-pointer
         -DNDEBUG
         >)
 

@@ -1,6 +1,7 @@
 //
 // Copyright (c) 2026 Noah Belton
 // SPDX-License-Identifier: MIT
+// Created by noahbelton29 on 27/03/2026.
 //
 
 #include "positron/ecs/scene/scene_serializer.h"
@@ -33,7 +34,7 @@ namespace Positron {
         }
 
         void writeStr(std::ofstream &f, const std::string &s) {
-            const uint16_t len = static_cast<uint16_t>(s.size());
+            const auto len = static_cast<uint16_t>(s.size());
             write(f, len);
             f.write(s.data(), len);
         }
@@ -64,7 +65,7 @@ namespace Positron {
         f.write(PSCN_MAGIC, 4);
         write(f, PSCN_VERSION);
 
-        const uint8_t extCount = static_cast<uint8_t>(extensions_.size());
+        const auto extCount = static_cast<uint8_t>(extensions_.size());
         write(f, extCount);
 
         World &world = scene_.world();
@@ -72,7 +73,7 @@ namespace Positron {
         std::vector<Entity> entities;
         world.each<TagComponent>([&](Entity e, TagComponent &) { entities.push_back(e); });
 
-        const uint32_t entityCount = static_cast<uint32_t>(entities.size());
+        const auto entityCount = static_cast<uint32_t>(entities.size());
         write(f, entityCount);
 
         for (Entity e: entities) {
@@ -99,7 +100,7 @@ namespace Positron {
                 writeStr(f, world.getComponent<TagComponent>(e).name);
 
             if (mask & COMP_TRANSFORM) {
-                const auto &[position, rotation, scale] = world.getComponent<TransformComponent>(e);
+                const auto &[position, rotation, scale, physicsRotation] = world.getComponent<TransformComponent>(e);
                 write(f, position.x);
                 write(f, position.y);
                 write(f, position.z);
