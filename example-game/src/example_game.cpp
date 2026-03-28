@@ -25,6 +25,8 @@
 
 #include <positron/ecs/systems/physics_system.h>
 
+#include "positron/ecs/systems/audio_system.h"
+
 static constexpr auto SAVE_PATH = "scene.pscn";
 
 static Positron::SceneSerializer makeSerializer(Positron::Scene &scene) {
@@ -44,11 +46,13 @@ void ExampleGame::onInit() {
     scene.addSystem<CameraSystem>();
     scene.addSystem<SpinSystem>();
     scene.addSystem<BounceSystem>();
+    scene.addSystem<Positron::AudioSystem>();
 
     const auto cam = scene.spawnEmpty("Camera");
     scene.world().addComponent<Positron::TransformComponent>(cam,
                                                              Positron::TransformComponent{.position = {0.f, 0.f, 3.f}});
     scene.world().addComponent<CameraComponent>(cam);
+    scene.world().addComponent<Positron::AudioListenerComponent>(cam);
 
     const auto sun = scene.spawnEmpty("Sun");
     scene.world().addComponent<Positron::TransformComponent>(

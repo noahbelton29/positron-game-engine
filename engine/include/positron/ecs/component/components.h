@@ -114,4 +114,20 @@ namespace Positron {
 
         bool castShadows = false;
     };
+
+    struct POSITRON_API AudioSourceComponent {
+        std::string path;
+        float       volume          = 1.f;
+        float       pitch           = 1.f;
+        float       rolloffDistance = 1.f;
+        float       maxDistance     = 20.f;
+        bool        loop            = false;
+        bool        playOnAwake     = true;
+
+        void *_sound   = nullptr;
+        bool  _loaded  = false;
+        bool  _playing = false;
+    };
+
+    struct POSITRON_API AudioListenerComponent {};
 } // namespace Positron

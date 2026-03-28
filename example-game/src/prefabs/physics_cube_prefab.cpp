@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "positron/core/log.h"
+#include "positron/ecs/systems/audio_system.h"
 
 PhysicsCubePrefab::PhysicsCubePrefab(const float size, const float mass, const float restitution, const float friction,
                                      std::string texturePath, const Positron::FilterMode filter) :
@@ -35,12 +36,22 @@ void PhysicsCubePrefab::onCreate(Positron::EntityBuilder &builder) {
     if (!texturePath_.empty())
         builder.with<Positron::TextureComponent>({texturePath_, filter_});
 
+    Positron::AudioSourceComponent src;
+    src.path            = "example-game/assets/sounds/bomb2.mp3";
+    src.rolloffDistance = 2.f;
+    src.maxDistance     = 5.f;
+    src.loop            = false;
+    src.playOnAwake     = false;
+    builder.with<Positron::AudioSourceComponent>(src);
+
     Positron::CollisionCallbackComponent cb;
-    cb.onContactAdded = [&world = builder.world()](const Positron::CollisionInfo &info) {
+    cb.onContactAdded = [&world = builder.world(), self = builder.entity()](const Positron::CollisionInfo &info) {
         if (world.hasComponent<Positron::TagComponent>(info.other)) {
             const auto &[name] = world.getComponent<Positron::TagComponent>(info.other);
             POSITRON_INFO("PhysicsCube hit '{}'", name);
         }
+        auto *audio = world.getSystem<Positron::AudioSystem>();
+        audio->play(world, self); // play on self, not info.other
     };
     builder.with<Positron::CollisionCallbackComponent>(cb);
 }

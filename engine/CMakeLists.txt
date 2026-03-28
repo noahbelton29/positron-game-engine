@@ -37,16 +37,30 @@ FetchContent_Declare(
         GIT_TAG master
 )
 FetchContent_Declare(
+        miniaudio
+        GIT_REPOSITORY https://github.com/mackron/miniaudio.git
+        GIT_TAG 0.11.21
+)
+FetchContent_Declare(
         pfr
         GIT_REPOSITORY https://github.com/boostorg/pfr.git
         GIT_TAG 2.2.0
 )
 
+# ---- Jolt Physics ----
 set(JPH_BUILD_SHARED_LIBS OFF CACHE BOOL "" FORCE)
 set(JPH_ENABLE_ASSERTS OFF CACHE BOOL "" FORCE)
 set(JPH_BUILD_DOCS OFF CACHE BOOL "" FORCE)
 set(JPH_ENABLE_INSTALL OFF CACHE BOOL "" FORCE)
+# Jolt must be compiled with -fPIC because it is statically linked into
+# PositronEngine which is a shared library. Without this, thread-local symbols
+# in Jolt are emitted with the local-exec TLS model (suitable only for
+# executables), and the linker rejects them with R_X86_64_TPOFF32.
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+# Jolt must be compiled with -fPIC when linked into a shared library.
+# Without it, Jolt's thread-local symbols use the local-exec TLS model which
+# is only valid for position-dependent executables; the linker then emits
+# "R_X86_64_TPOFF32 ... local-exec is incompatible with -shared".
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 FetchContent_Declare(
@@ -55,7 +69,7 @@ FetchContent_Declare(
         GIT_TAG v5.3.0
         SOURCE_SUBDIR Build
 )
-FetchContent_MakeAvailable(glfw spdlog glm stb pfr JoltPhysics)
+FetchContent_MakeAvailable(glfw spdlog glm stb pfr JoltPhysics miniaudio)
 FetchContent_Populate(backward)
 
 add_library(glad STATIC
@@ -76,7 +90,8 @@ target_include_directories(PositronEngine PUBLIC
         ${backward_SOURCE_DIR}
         ${stb_SOURCE_DIR}
         ${pfr_SOURCE_DIR}/include
-        ${joltphysics_SOURCE_DIR})
+        ${joltphysics_SOURCE_DIR}
+        ${miniaudio_SOURCE_DIR})
 
 target_compile_definitions(PositronEngine PUBLIC BACKWARD_HAS_DW=1)
 target_compile_definitions(PositronEngine PRIVATE POSITRON_BUILD_DLL)
