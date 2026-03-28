@@ -108,7 +108,9 @@ namespace Positron {
 
         POSITRON_ERROR("{}", oss.str());
         Log::getLogger()->flush();
-        std::exit(signal);
+
+        std::signal(signal, SIG_DFL);
+        std::raise(signal);
     }
 
     void Log::init() {

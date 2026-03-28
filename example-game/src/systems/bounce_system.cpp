@@ -13,9 +13,10 @@
 #include "systems/bounce_system.h"
 
 void BounceSystem::onUpdate(Positron::World &world) {
+    const float dt = world.getResource<float>();
     world.each<Positron::TransformComponent, BouncerComponent>(
-            [](Positron::Entity, Positron::TransformComponent &transform, BouncerComponent &bouncer) {
-                bouncer.time += 0.016f;
+            [dt](Positron::Entity, Positron::TransformComponent &transform, BouncerComponent &bouncer) {
+                bouncer.time += dt;
                 transform.position.y = std::sin(bouncer.time * bouncer.frequency) * bouncer.amplitude;
             });
 }

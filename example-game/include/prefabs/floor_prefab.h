@@ -14,6 +14,7 @@ public:
 
     [[nodiscard]] std::string        name() const override;
     [[nodiscard]] Positron::MeshDesc mesh() const override;
+    void                             onCreate(Positron::EntityBuilder &builder) override;
 
 private:
     float floorWidth_;

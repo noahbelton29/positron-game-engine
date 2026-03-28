@@ -1,6 +1,7 @@
 //
 // Copyright (c) 2026 Noah Belton
 // SPDX-License-Identifier: MIT
+// Created by noahbelton29 on 25/03/2026.
 //
 
 #include "example_game.h"
@@ -15,60 +16,22 @@
 
 #include "prefabs/bouncing_cube_prefab.h"
 #include "prefabs/floor_prefab.h"
+#include "prefabs/physics_cube_prefab.h"
 #include "prefabs/spinning_cube_prefab.h"
 
 #include "systems/bounce_system.h"
 #include "systems/camera_system.h"
 #include "systems/spin_system.h"
 
+#include <positron/ecs/systems/physics_system.h>
+
 static constexpr auto SAVE_PATH = "scene.pscn";
 
 static Positron::SceneSerializer makeSerializer(Positron::Scene &scene) {
     Positron::SceneSerializer s(scene);
-
-    // CameraComponent
-    s.extend<CameraComponent>(
-            [](std::ofstream &f, const CameraComponent &c) {
-                f.write(reinterpret_cast<const char *>(&c.fov), sizeof(float));
-                f.write(reinterpret_cast<const char *>(&c.nearPlane), sizeof(float));
-                f.write(reinterpret_cast<const char *>(&c.farPlane), sizeof(float));
-                f.write(reinterpret_cast<const char *>(&c.active), sizeof(bool));
-            },
-            [](std::ifstream &f, Positron::Entity e, Positron::World &w) {
-                CameraComponent c;
-                f.read(reinterpret_cast<char *>(&c.fov), sizeof(float));
-                f.read(reinterpret_cast<char *>(&c.nearPlane), sizeof(float));
-                f.read(reinterpret_cast<char *>(&c.farPlane), sizeof(float));
-                f.read(reinterpret_cast<char *>(&c.active), sizeof(bool));
-                w.addComponent<CameraComponent>(e, c);
-            });
-
-    // SpinnerComponent
-    s.extend<SpinnerComponent>(
-            [](std::ofstream &f, const SpinnerComponent &c) {
-                f.write(reinterpret_cast<const char *>(&c.speed), sizeof(float));
-            },
-            [](std::ifstream &f, Positron::Entity e, Positron::World &w) {
-                SpinnerComponent c;
-                f.read(reinterpret_cast<char *>(&c.speed), sizeof(float));
-                w.addComponent<SpinnerComponent>(e, c);
-            });
-
-    // BouncerComponent
-    s.extend<BouncerComponent>(
-            [](std::ofstream &f, const BouncerComponent &c) {
-                f.write(reinterpret_cast<const char *>(&c.amplitude), sizeof(float));
-                f.write(reinterpret_cast<const char *>(&c.frequency), sizeof(float));
-                f.write(reinterpret_cast<const char *>(&c.time), sizeof(float));
-            },
-            [](std::ifstream &f, Positron::Entity e, Positron::World &w) {
-                BouncerComponent c;
-                f.read(reinterpret_cast<char *>(&c.amplitude), sizeof(float));
-                f.read(reinterpret_cast<char *>(&c.frequency), sizeof(float));
-                f.read(reinterpret_cast<char *>(&c.time), sizeof(float));
-                w.addComponent<BouncerComponent>(e, c);
-            });
-
+    s.autoExtend<CameraComponent>();
+    s.autoExtend<SpinnerComponent>();
+    s.autoExtend<BouncerComponent>();
     return s;
 }
 
@@ -77,27 +40,34 @@ void ExampleGame::onInit() {
 
     Positron::Scene &scene = getScene();
 
+    scene.addSystem<Positron::PhysicsSystem>();
     scene.addSystem<CameraSystem>();
     scene.addSystem<SpinSystem>();
     scene.addSystem<BounceSystem>();
 
-    auto serializer = makeSerializer(scene);
-    serializer.load(SAVE_PATH);
+    const auto cam = scene.spawnEmpty("Camera");
+    scene.world().addComponent<Positron::TransformComponent>(cam,
+                                                             Positron::TransformComponent{.position = {0.f, 0.f, 3.f}});
+    scene.world().addComponent<CameraComponent>(cam);
 
-    // const auto cam = scene.spawnEmpty("Camera");
-    // scene.world().addComponent<Positron::TransformComponent>(cam, Positron::TransformComponent{{0.f, 0.f, 3.f}});
-    // scene.world().addComponent<CameraComponent>(cam);
+    const auto sun = scene.spawnEmpty("Sun");
+    scene.world().addComponent<Positron::TransformComponent>(
+            sun, {.position = {0.f, 5.f, 3.f}, .rotation = {-45.f, 0.f, 0.f}});
+    scene.world().addComponent<Positron::LightComponent>(sun, {.type        = Positron::LightType::Directional,
+                                                               .color       = {1.f, 1.0f, 1.0f},
+                                                               .intensity   = 1.2f,
+                                                               .castShadows = true});
 
-    // const auto sun = scene.spawnEmpty("Sun");
-    // scene.world().addComponent<Positron::TransformComponent>(sun, {{0.f, 5.f, 3.f}, {-45.f, 0.f, 0.f}});
-    // scene.world().addComponent<Positron::LightComponent>(sun, {.type        = Positron::LightType::Directional,
-    //                                                            .color       = {1.f, 1.0f, 1.0f},
-    //                                                            .intensity   = 1.2f,
-    //                                                            .castShadows = true});
+    {
+        const auto e = scene.spawn<PhysicsCubePrefab>(Positron::SpawnParams{}.at({-3.f, 1.f, 0.f}));
+        scene.world().getComponent<Positron::RigidbodyComponent>(e).linearVelocity = {1.5f, 0.f, 0.f};
+    }
+    {
+        const auto e = scene.spawn<PhysicsCubePrefab>(Positron::SpawnParams{}.at({3.f, 1.15f, 0.f}));
+        scene.world().getComponent<Positron::RigidbodyComponent>(e).linearVelocity = {-11.f, 0.f, 0.f};
+    }
 
-    // scene.spawn<SpinningCubePrefab>(Positron::SpawnParams{}.at({-1.5f, 0.f, 0.f}));
-    // scene.spawn<BouncingCubePrefab>(Positron::SpawnParams{}.at({1.5f, 0.f, 0.f}));
-    // scene.spawn<FloorPrefab>(Positron::SpawnParams{}.at({0.f, -1.f, 0.f}));
+    scene.spawn<FloorPrefab>(Positron::SpawnParams{}.at({0.f, -1.f, 0.f}));
 
     events_.subscribe<Positron::KeyPressedEvent>([this, &scene](const Positron::KeyPressedEvent &keyEvent) {
         if (keyEvent.getKey() == Positron::Key::Escape) {
@@ -106,15 +76,13 @@ void ExampleGame::onInit() {
         }
 
         if (keyEvent.getKey() == Positron::Key::F5) {
-            auto serializer = makeSerializer(scene);
-            if (serializer.save(SAVE_PATH))
+            if (const auto serializer = makeSerializer(scene); serializer.save(SAVE_PATH))
                 POSITRON_INFO("Scene saved to {}", SAVE_PATH);
             return true;
         }
 
         if (keyEvent.getKey() == Positron::Key::F9) {
-            auto serializer = makeSerializer(scene);
-            if (serializer.load(SAVE_PATH))
+            if (const auto serializer = makeSerializer(scene); serializer.load(SAVE_PATH))
                 POSITRON_INFO("Scene loaded from {}", SAVE_PATH);
             return true;
         }

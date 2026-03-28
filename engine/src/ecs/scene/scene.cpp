@@ -32,7 +32,7 @@ namespace Positron {
         const Entity entity = world_.createEntity();
         world_.addComponent<TagComponent>(entity, TagComponent{prefab.name()});
         world_.addComponent<TransformComponent>(entity,
-                                                TransformComponent{params.position, params.rotation, params.scale});
+                                                TransformComponent{.position = params.position, .rotation = params.rotation, .scale = params.scale});
 
         const MeshDesc &desc = prefab.mesh();
         if (auto mesh = buildMesh(renderer_->getAPI(), desc)) {
@@ -58,7 +58,7 @@ namespace Positron {
         const Entity entity = world_.createEntity();
         world_.addComponent<TagComponent>(entity, TagComponent{name});
         world_.addComponent<TransformComponent>(entity,
-                                                TransformComponent{params.position, params.rotation, params.scale});
+                                                TransformComponent{.position = params.position, .rotation = params.rotation, .scale = params.scale});
 
         if (auto mesh = buildMesh(renderer_->getAPI(), desc)) {
             Mesh *raw = storeMesh(std::move(mesh));

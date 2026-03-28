@@ -7,14 +7,22 @@
 #include "positron/ecs/component/components.h"
 
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/quaternion.hpp>
 
 namespace Positron {
     glm::mat4 TransformComponent::matrix() const {
         glm::mat4 m = glm::translate(glm::mat4(1.f), position);
-        m           = glm::rotate(m, glm::radians(rotation.y), {0.f, 1.f, 0.f});
-        m           = glm::rotate(m, glm::radians(rotation.x), {1.f, 0.f, 0.f});
-        m           = glm::rotate(m, glm::radians(rotation.z), {0.f, 0.f, 1.f});
-        m           = glm::scale(m, scale);
+
+        static constexpr glm::quat identity(1.f, 0.f, 0.f, 0.f);
+        if (physicsRotation != identity) {
+            m = m * glm::mat4_cast(physicsRotation);
+        } else {
+            m = glm::rotate(m, glm::radians(rotation.y), {0.f, 1.f, 0.f});
+            m = glm::rotate(m, glm::radians(rotation.x), {1.f, 0.f, 0.f});
+            m = glm::rotate(m, glm::radians(rotation.z), {0.f, 0.f, 1.f});
+        }
+
+        m = glm::scale(m, scale);
         return m;
     }
 } // namespace Positron
